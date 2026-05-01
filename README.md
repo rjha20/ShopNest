@@ -1,13 +1,18 @@
 <div align="center">
-  <h1><img src="https://gocart-gs.vercel.app/favicon.ico" width="20" height="20" alt="GoCart Favicon">
-   GoCart</h1>
+  <h1>🛍️ ShopNest</h1>
   <p>
-    An open-source multi-vendor e-commerce platform built with Next.js and Tailwind CSS.
+    A scalable full-stack e-commerce platform built with Next.js, Prisma, and modern web technologies.
   </p>
   <p>
-    <a href="https://github.com/GreatStackDev/goCart/blob/main/LICENSE.md"><img src="https://img.shields.io/github/license/GreatStackDev/goCart?style=for-the-badge" alt="License"></a>
-    <a href="https://github.com/GreatStackDev/goCart/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge" alt="PRs Welcome"></a>
-    <a href="https://github.com/GreatStackDev/goCart/issues"><img src="https://img.shields.io/github/issues/GreatStackDev/goCart?style=for-the-badge" alt="GitHub issues"></a>
+    <a href="https://github.com/rha20/ShopNest/blob/main/LICENSE.md">
+      <img src="https://img.shields.io/github/license/rha20/ShopNest?style=for-the-badge" alt="License">
+    </a>
+    <a href="https://github.com/rha20/ShopNest/pulls">
+      <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge" alt="PRs Welcome">
+    </a>
+    <a href="https://github.com/rha20/ShopNest/issues">
+      <img src="https://img.shields.io/github/issues/rha20/ShopNest?style=for-the-badge" alt="GitHub issues">
+    </a>
   </p>
 </div>
 
@@ -15,71 +20,221 @@
 
 ## 📖 Table of Contents
 
-- [✨ Features](#-features)
-- [🛠️ Tech Stack](#-tech-stack)
-- [🚀 Getting Started](#-getting-started)
-- [🤝 Contributing](#-contributing)
-- [📜 License](#-license)
+ [✨ Features](#-features)
+ [🏗️ Architecture](#-architecture)
+ [🛠️ Tech Stack](#-tech-stack)
+ [📂 Project Structure](#-project-structure)
+ [🚀 Getting Started](#-getting-started)
+ [🔐 Environment Variables](#-environment-variables)
+ [🤝 Contributing](#-contributing)
+ [📜 License](#-license)
 
 ---
 
-## Features
+## ✨ Features
 
-- **Multi-Vendor Architecture:** Allows multiple vendors to register, manage their own products, and sell on a single platform.
-- **Customer-Facing Storefront:** A beautiful and responsive user interface for customers to browse and purchase products.
-- **Vendor Dashboards:** Dedicated dashboards for vendors to manage products, view sales analytics, and track orders.
-- **Admin Panel:** A comprehensive dashboard for platform administrators to oversee vendors, products, and commissions.
+* 🛒 **Modern E-commerce Flow**
 
-## 🛠️ Tech Stack <a name="-tech-stack"></a>
+  * Product listing, cart, wishlist, checkout
 
-- **Framework:** Next.js
-- **Styling:** Tailwind CSS
-- **UI Components:** Lucide React for icons
-- **State Management:** Redux Toolkit
+* 🔐 **Authentication & Authorization**
 
-## 🚀 Getting Started <a name="-getting-started"></a>
+  * Secure login system with role-based access
 
-First, install the dependencies. We recommend using `npm` for this project.
+* 📦 **Order Management**
+
+  * Order tracking and history
+
+* 🧑‍💼 **Admin Panel**
+
+  * Manage products, users, and orders
+
+* ⚡ **Optimized Performance**
+
+  * Built with Next.js App Router
+
+* 🗂️ **Scalable Architecture**
+
+  * Clean folder structure with separation of concerns
+
+* 🔄 **Background Processing**
+
+  * Ingest layer for async jobs and server-side tasks
+
+---
+
+## 🏗️ Architecture
+
+* **Monolithic Full-Stack (Next.js)**
+
+  * Frontend + Backend in one project using `/app/api`
+
+* **State Management**
+
+  * Redux Toolkit via StoreProvider
+
+* **Database Layer**
+
+  * Prisma ORM
+
+* **Middleware**
+
+  * Handles authentication and route protection
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+* Next.js (App Router)
+* TypeScript
+* Tailwind CSS
+
+### Backend
+
+* Next.js API Routes
+* Prisma ORM
+* Node.js
+
+### Tools & Services
+
+* Cloudinary (image handling)
+* Razorpay / Stripe (payments - optional integration)
+
+---
+
+## 📂 Project Structure
+
+```bash
+ShopNest/
+│
+├── app/
+│   ├── (public)/         # Public routes (home, auth)
+│   ├── admin/            # Admin dashboard
+│   ├── api/              # Backend API routes
+│   ├── store/            # Redux store
+│   ├── layout.jsx
+│   ├── globals.css
+│   └── StoreProvider.js
+│
+├── components/           # Reusable UI components
+├── assets/               # Static assets
+│
+├── ingest/               # Background jobs / async logic
+│   ├── client.js
+│   └── function.js
+│
+├── lib/                  # Utility functions
+├── prisma/               # Database schema
+│   └── schema.prisma
+│
+├── middleware.ts         # Route protection & auth
+│
+├── .env
+├── .env.example
+├── package.json
+├── next.config.mjs
+├── tsconfig.json
+│
+└── README.md
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/rha20/ShopNest.git
+cd ShopNest
+```
+
+### 2️⃣ Install dependencies
 
 ```bash
 npm install
 ```
 
-Then, run the development server:
+### 3️⃣ Setup environment variables
+
+Create a `.env` file:
+
+```env
+DATABASE_URL=your_database_url
+JWT_SECRET=your_secret
+CLOUDINARY_URL=your_cloudinary_url
+```
+
+### 4️⃣ Setup database
+
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+### 5️⃣ Run the app
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/(public)/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Outfit](https://vercel.com/font), a new font family for Vercel.
+Visit 👉 http://localhost:3000
 
 ---
 
-## 🤝 Contributing <a name="-contributing"></a>
+## 🔐 Environment Variables
 
-We welcome contributions! Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for more details on how to get started.
+| Variable       | Description                |
+| -------------- | -------------------------- |
+| DATABASE_URL   | Database connection string |
+| JWT_SECRET     | Authentication secret      |
+| CLOUDINARY_URL | Cloudinary config          |
 
 ---
 
-## 📜 License <a name="-license"></a>
+## 🤝 Contributing
 
-This project is licensed under the MIT License. See the [LICENSE.md](./LICENSE.md) file for details.
+Contributions are welcome!
 
-## Learn More
+1. Fork the repository
+2. Create a new branch
+3. Commit your changes
+4. Open a Pull Request
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📜 License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is licensed under the MIT License.
+
+---
+
+## ⭐ Support
+
+If you found this project helpful:
+
+* ⭐ Star the repository
+* 🍴 Fork it
+* 🧑‍💻 Contribute
+
+---
+
+## 👨‍💻 Author
+
+**Rohan Jha**
+GitHub: https://github.com/rha20
+
+---
+
+## 🚀 Future Improvements
+
+* Multi-vendor support
+* AI-based recommendations
+* Real-time order tracking
+* Advanced analytics dashboard
+
+---
+
+> 💡 Built with the goal of achieving production-level architecture and strong backend + full-stack understanding.
