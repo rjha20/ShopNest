@@ -8,7 +8,7 @@ import { useUser, useClerk, UserButton } from "@clerk/nextjs";
 
 const Navbar = () => {
 
-    const { user } = useUser();
+    const { isLoaded, user } = useUser();
     const {openSignIn} = useClerk();
     const router = useRouter();
 
@@ -57,7 +57,7 @@ const Navbar = () => {
                         </Link>
 
                         {/* Shared Auth Button/Menu (Mobile + Desktop) */}
-                        {!user ? (
+                        {!isLoaded ? null : !user ? (
                             <button onClick={openSignIn} className="px-4 py-1.5 sm:px-8 sm:py-2 bg-indigo-500 hover:bg-indigo-600 text-sm sm:text-base transition text-white rounded-full">
                                 Login
                             </button>

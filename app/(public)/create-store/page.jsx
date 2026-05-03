@@ -4,9 +4,15 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import toast from "react-hot-toast"
 import Loading from "@/components/Loading"
+import { useAuth, useUser } from "@clerk/nextjs"
+import { useRouter } from "next/navigation"
+import axios from "axios"
 
 export default function CreateStore() {
 
+    const { isLoaded, user } = useUser()
+    const router = useRouter()
+    const { getToken } = useAuth()
     const [alreadySubmitted, setAlreadySubmitted] = useState(false)
     const [status, setStatus] = useState("")
     const [loading, setLoading] = useState(true)
@@ -27,7 +33,34 @@ export default function CreateStore() {
     }
 
     const fetchSellerStatus = async () => {
-        // Logic to check if the store is already submitted
+        const token = await getToken()
+        try {
+            const { data } = await axios.get("/api/store/create", {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            if (["pending", "approved", "rejected"].includes(data.status)) {
+                setStatus(data.status)
+                setAlreadySubmitted(true)
+                switch (data.status) {
+                    case "approved":
+                        setMessage("Your store has been approved, you can now add products to your store from dashboard")
+                        setTimeout(() => router.push("/store"), 5000)
+                        break;
+                    case "rejected":
+                        setMessage("Your store has been rejected, please contact support for more details")
+                        break;
+                    case "pending":
+                        setMessage("Your store is pending approval, please wait for admin verification")
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                setAlreadySubmitted(false)
+            }
+        } catch (error) {
+            toast.error(error?.response?.data?.error || error.message)
+        }
 
 
         setLoading(false)
@@ -35,16 +68,56 @@ export default function CreateStore() {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
-        // Logic to submit the store details
-
+        if (!user) {
+            return toast('Please login to continue')
+        }
+        if (!storeInfo.image) {
+            return toast.error("Please upload a store logo")
+        }
+        try {
+            const token = await getToken()
+            const formData = new FormData()
+            formData.append("name", storeInfo.name)
+            formData.append("description", storeInfo.description)
+            formData.append("username", storeInfo.username)
+            formData.append("email", storeInfo.email)
+            formData.append("contact", storeInfo.contact)
+            formData.append("address", storeInfo.address)
+            formData.append("image", storeInfo.image)
+            const { data } = await axios.post("/api/store/create", formData, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            toast.success(data.message)
+            await fetchSellerStatus()
+        } catch (error) {
+            toast.error(error?.response?.data?.error || error.message)
+        }
 
     }
 
     useEffect(() => {
-        fetchSellerStatus()
-    }, [])
+        if(user){
+            fetchSellerStatus()
+        }
+    }, [user])
 
-    return !loading ? (
+    if (!isLoaded) {
+        return <Loading />
+    }
+
+    if (!user) {
+        return (
+            <div className="min-h-[80vh] mx-6 flex items-center justify-center text-slate-400">
+                <h1 className="text-2xl sm:text-4xl font-semibold">Please <span className="text-slate-500">login</span> to continue</h1>
+            </div>
+        )
+    }
+
+    if (loading) {
+        return <Loading />
+    }
+
+    return (
         <>
             {!alreadySubmitted ? (
                 <div className="mx-6 min-h-[70vh] my-16">
@@ -89,5 +162,5 @@ export default function CreateStore() {
                 </div>
             )}
         </>
-    ) : (<Loading />)
+    )
 }
