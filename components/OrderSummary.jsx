@@ -11,7 +11,7 @@ const OrderSummary = ({ totalPrice, items }) => {
 
     const router = useRouter();
 
-    const addressList = useSelector(state => state.address.list);
+    const addressList = useSelector(state => state.address?.list || []);
 
     const [paymentMethod, setPaymentMethod] = useState('COD');
     const [selectedAddress, setSelectedAddress] = useState(null);
@@ -53,11 +53,11 @@ const OrderSummary = ({ totalPrice, items }) => {
                     ) : (
                         <div>
                             {
-                                addressList.length > 0 && (
+                                addressList && addressList.length > 0 && (
                                     <select className='border border-slate-400 p-2 w-full my-3 outline-none rounded' onChange={(e) => setSelectedAddress(addressList[e.target.value])} >
                                         <option value="">Select Address</option>
                                         {
-                                            addressList.map((address, index) => (
+                                            addressList?.map((address, index) => (
                                                 <option key={index} value={index}>{address.name}, {address.city}, {address.state}, {address.zip}</option>
                                             ))
                                         }

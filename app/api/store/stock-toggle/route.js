@@ -36,6 +36,9 @@ export async function POST(request){
             where:{id:productId},
             data:{inStock:!product.inStock}
         })
+        return NextResponse.json({
+            message:"Stock updated successfully"
+        })
 
     } catch (error) {
         console.log(error);

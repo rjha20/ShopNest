@@ -12,7 +12,7 @@ export default function Cart() {
 
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$';
     
-    const { cartItems } = useSelector(state => state.cart);
+    const { cartItems } = useSelector(state => state.cart || {});
     const products = useSelector(state => state.product.list);
 
     const dispatch = useDispatch();
@@ -41,12 +41,12 @@ export default function Cart() {
     }
 
     useEffect(() => {
-        if (products.length > 0) {
+        if (products && products.length > 0) {
             createCartArray();
         }
     }, [cartItems, products]);
 
-    return cartArray.length > 0 ? (
+    return cartArray && cartArray.length > 0 ? (
         <div className="min-h-screen mx-4 sm:mx-6 text-slate-800">
 
             <div className="max-w-7xl mx-auto ">
