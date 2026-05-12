@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState } from "react"
 import Loading from "@/components/Loading"
-import { orderDummyData } from "@/assets/assets"
 import { useAuth } from "@clerk/nextjs"
 import axios from "axios"
 import toast from "react-hot-toast"
@@ -22,12 +21,7 @@ export default function StoreOrders() {
                     Authorization: `Bearer ${token}`
                 }
             })
-        setOrders(prev =>
-            prev.map(order =>
-                order.id === orderId ? { ...order, status } : order
-
-            ))
-        toast.success('Order status updated!')
+            setOrders(data.orders || [])
         } catch (error) {
             toast.error(error?.response?.data?.error || error.message)
         } finally {
@@ -44,7 +38,12 @@ export default function StoreOrders() {
                     Authorization: `Bearer ${token}`
                 }
             })
-            setOrders(data.orders)
+            setOrders(prev =>
+                prev.map(order =>
+                    order.id === orderId ? { ...order, status } : order
+                )
+            )
+            toast.success('Order status updated!')
         } catch (error) {
             toast.error(error?.response?.data?.error || error.message)
         }
@@ -92,7 +91,7 @@ export default function StoreOrders() {
                                         {index + 1}
                                     </td>
                                     <td className="px-4 py-3">{order.user?.name}</td>
-                                    <td className="px-4 py-3 font-medium text-slate-800">${order.total}</td>
+                                    <td className="px-4 py-3 font-medium text-slate-800">₹{order.total}</td>
                                     <td className="px-4 py-3">{order.paymentMethod}</td>
                                     <td className="px-4 py-3">
                                         {order.isCouponUsed ? (

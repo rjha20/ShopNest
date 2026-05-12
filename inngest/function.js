@@ -22,14 +22,26 @@ export const syncUserUpdation = inngest.createFunction(
     { id: 'sync-user-update', triggers: { event: 'clerk/user.updated' } },
     async ({ event }) => {
         const { data } = event;
-        await prisma.user.update({
+        const publicMetadata = data.public_metadata || {};
+        const plan = publicMetadata.plan || null;
+
+        await prisma.user.upsert({
             where: { id: data.id },
-            data: {
-                email: data.email_addresses[0].email_address,
-                name: `${data.first_name} ${data.last_name}`,
+            update: {
+                email: data.email_addresses?.[0]?.email_address,
+                name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
                 image: data.image_url
+            },
+            create: {
+                id: data.id,
+                email: data.email_addresses?.[0]?.email_address || '',
+                name: `${data.first_name || ''} ${data.last_name || ''}`.trim() || 'User',
+                image: data.image_url || '',
+                cart: {}
             }
         })
+
+        console.log(`User ${data.id} synced, plan: ${plan}`)
     }
 )
 

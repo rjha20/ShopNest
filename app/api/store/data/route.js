@@ -8,18 +8,24 @@ export async function GET(request){
     try {
         //Get store usernames from query params
         const {searchParams}=new URL(request.url);
-        const username=searchParams.get("username").toLowerCase();
+        const username=searchParams.get("username");
 
         if(!username){
             return NextResponse.json({
                 error:"Username is missing"
-            },{status:401})
+            },{status:400})
         }
 
         //Get store info and inStock products with rating 
-        const store=await prisma.store.findUnique({
-            where:{username,isActive:true},
-            include:{Product:{include:{rating:true}}}
+        const store=await prisma.store.findFirst({
+            where:{username: username.toLowerCase(), isActive:true},
+            include:{
+                Product:{
+                    where: { inStock: true },
+                    include:{rating:true},
+                    orderBy: { createdAt: 'desc' }
+                }
+            }
         })
 
         if(!store){
@@ -27,6 +33,8 @@ export async function GET(request){
                 error:"Store not found"
             },{status:404})
         }
+
+        return NextResponse.json({ store })
 
     } catch (error) {
         console.log(error);

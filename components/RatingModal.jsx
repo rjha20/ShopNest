@@ -4,21 +4,48 @@ import { Star } from 'lucide-react';
 import React, { useState } from 'react'
 import { XIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '@clerk/nextjs';
+import { useDispatch } from 'react-redux';
+import axios from 'axios';
+import { addRating } from '@/lib/features/rating/ratingSlice';
 
 const RatingModal = ({ ratingModal, setRatingModal }) => {
 
     const [rating, setRating] = useState(0);
     const [review, setReview] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+    const { getToken } = useAuth()
+    const dispatch = useDispatch()
 
     const handleSubmit = async () => {
-        if (rating < 0 || rating > 5) {
+        if (rating <= 0 || rating > 5) {
             return toast('Please select a rating');
         }
-        if (review.length < 5) {
+        if (review.trim().length < 5) {
             return toast('write a short review');
         }
 
-        setRatingModal(null);
+        try {
+            setSubmitting(true)
+            const token=await getToken()
+            const {data}= await axios.post('/api/rating',{
+                productId: ratingModal.productId,
+                orderId: ratingModal.orderId,
+                rating, 
+                review: review.trim()
+            },{
+                headers:{
+                    Authorization:`Bearer ${token}`
+                }
+            })
+            dispatch(addRating(data.rating))
+            toast.success(data.message)
+            setRatingModal(null)
+        } catch (error) {
+            toast.error(error?.response?.data?.error || error.message)
+        } finally {
+            setSubmitting(false)
+        }
     }
 
     return (
@@ -44,8 +71,8 @@ const RatingModal = ({ ratingModal, setRatingModal }) => {
                     value={review}
                     onChange={(e) => setReview(e.target.value)}
                 ></textarea>
-                <button onClick={e => toast.promise(handleSubmit(), { loading: 'Submitting...' })} className='w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition'>
-                    Submit Rating
+                <button disabled={submitting} onClick={handleSubmit} className='w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 disabled:opacity-60 disabled:cursor-not-allowed transition'>
+                    {submitting ? 'Submitting...' : 'Submit Rating'}
                 </button>
             </div>
         </div>

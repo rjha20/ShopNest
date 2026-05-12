@@ -76,10 +76,11 @@ export async function POST(request){
                 logo : optimizedImage
             }
         })
-        //Link store to user
-        await prisma.user.update({
+        //Link store to user (upsert in case user doesn't exist yet)
+        await prisma.user.upsert({
             where:{id:userId},
-            data:{store:{connect:{id:newStore.id}}}
+            update:{store:{connect:{id:newStore.id}}},
+            create:{id:userId,name:"User",email:"",image:"",cart:{}}
         })
         return NextResponse.json({
             message:"Applied, waiting for approval"

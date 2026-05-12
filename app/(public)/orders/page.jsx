@@ -2,15 +2,54 @@
 import PageTitle from "@/components/PageTitle"
 import { useEffect, useState } from "react";
 import OrderItem from "@/components/OrderItem";
-import { orderDummyData } from "@/assets/assets";
+import { useAuth, useUser } from "@clerk/nextjs";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function Orders() {
 
     const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const { getToken } = useAuth();
+    const { user, isLoaded } = useUser();
 
     useEffect(() => {
-        setOrders(orderDummyData)
-    }, []);
+        const fetchOrders = async () => {
+            if (!isLoaded) return;
+
+            if (!user) {
+                setOrders([]);
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                const token = await getToken();
+                const { data } = await axios.get('/api/orders', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setOrders(data.orders || []);
+            } catch (error) {
+                toast.error(error?.response?.data?.error || error.message);
+                setOrders([]);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchOrders();
+    }, [isLoaded, user, getToken]);
+
+    if (loading) {
+        return (
+            <div className="min-h-[80vh] mx-4 sm:mx-6 flex items-center justify-center text-slate-400">
+                <h1 className="text-2xl sm:text-4xl font-semibold">Loading orders...</h1>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-[70vh] mx-4 sm:mx-6">

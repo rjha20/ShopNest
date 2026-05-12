@@ -1,5 +1,3 @@
-import Product from "@/app/(public)/product/[productId]/page";
-import OrderItem from "@/components/OrderItem";
 import prisma from "@/lib/prisma";
 import authSeller from "@/middleware/authSeller";
 import { getAuth } from "@clerk/nextjs/server";
@@ -46,19 +44,26 @@ export async function GET(request) {
                 error: "Unauthorized"
             }, { status: 401 })
         }
-        const orders = prisma.order.findMany({
-            where: { storeId },
+        const orders = await prisma.order.findMany({
+            where: {
+                storeId,
+                OR: [
+                    { paymentMethod: "COD" },
+                    { AND: [{ paymentMethod: "STRIPE" }, { isPaid: true }] },
+                    { AND: [{ paymentMethod: "RAZORPAY" }, { isPaid: true }] },
+                ],
+            },
             include: {
                 user: true,
                 address: true,
-                OrderItem: {
+                orderItems: {
                     include: {
                         product: true
                     }
-                },
-                orderBy: {
-                    createdAt: 'desc'
                 }
+            },
+            orderBy: {
+                createdAt: 'desc'
             }
         })
         return NextResponse.json({ orders })

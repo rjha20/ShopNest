@@ -5,6 +5,7 @@ import axios from "axios"
 import Image from "next/image"
 import { useState } from "react"
 import { toast } from "react-hot-toast"
+import { Loader2Icon, SparklesIcon } from "lucide-react"
 
 export default function StoreAddProduct() {
 
@@ -19,6 +20,7 @@ export default function StoreAddProduct() {
         category: "",
     })
     const [loading, setLoading] = useState(false)
+    const [aiLoading, setAiLoading] = useState(false)
 
     const {getToken}=useAuth()
 
@@ -73,6 +75,74 @@ export default function StoreAddProduct() {
         
     }
 
+    const generateProductListing = async () => {
+        if (!productInfo.name && !productInfo.description) {
+            return toast.error('Enter a product name or description first')
+        }
+
+        try {
+            setAiLoading(true)
+            const token = await getToken()
+            const { data } = await axios.post('/api/ai/product-description', productInfo, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            const result = data.result
+            setProductInfo(prev => ({
+                ...prev,
+                name: result.name || prev.name,
+                description: [
+                    result.description || prev.description,
+                    ...(Array.isArray(result.highlights) && result.highlights.length ? ["", "Highlights:", ...result.highlights.map(item => `- ${item}`)] : [])
+                ].filter(Boolean).join("\n"),
+                category: result.category || prev.category,
+            }))
+            toast.success('AI listing generated')
+        } catch (error) {
+            toast.error(error?.response?.data?.error || error.message)
+        } finally {
+            setAiLoading(false)
+        }
+    }
+
+    const generateFromImage = async (imageFile) => {
+        if (!imageFile) {
+            return toast.error('Upload an image first')
+        }
+
+        try {
+            setAiLoading(true)
+            const token = await getToken()
+            const formData = new FormData()
+            formData.append('image', imageFile)
+
+            const { data } = await axios.post('/api/ai/image-description', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+
+            const result = data.result
+            setProductInfo(prev => ({
+                ...prev,
+                name: result.name || prev.name,
+                description: [
+                    result.description || prev.description,
+                    ...(Array.isArray(result.highlights) && result.highlights.length ? ["", "Highlights:", ...result.highlights.map(item => `- ${item}`)] : [])
+                ].filter(Boolean).join("\n"),
+                category: result.category || prev.category,
+            }))
+            toast.success('AI listing generated from image')
+        } catch (error) {
+            toast.error(error?.response?.data?.error || error.message)
+        } finally {
+            setAiLoading(false)
+        }
+    }
+
 
     return (
         <form onSubmit={e => toast.promise(onSubmitHandler(e), { loading: "Adding Product..." })} className="text-slate-500 mb-28">
@@ -88,13 +158,36 @@ export default function StoreAddProduct() {
                 ))}
             </div>
 
+            {images[1] && (
+                <button
+                    type="button"
+                    disabled={aiLoading}
+                    onClick={() => generateFromImage(images[1])}
+                    className="inline-flex items-center gap-1.5 rounded border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-60 mt-3"
+                >
+                    {aiLoading ? <Loader2Icon size={14} className="animate-spin" /> : <SparklesIcon size={14} />}
+                    Generate from Image
+                </button>
+            )}
+
             <label htmlFor="" className="flex flex-col gap-2 my-6 ">
                 Name
                 <input type="text" name="name" onChange={onChangeHandler} value={productInfo.name} placeholder="Enter product name" className="w-full max-w-sm p-2 px-4 outline-none border border-slate-200 rounded" required />
             </label>
 
             <label htmlFor="" className="flex flex-col gap-2 my-6 ">
-                Description
+                <span className="flex items-center justify-between max-w-sm">
+                    Description
+                    <button
+                        type="button"
+                        disabled={aiLoading}
+                        onClick={generateProductListing}
+                        className="inline-flex items-center gap-1.5 rounded border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-60"
+                    >
+                        {aiLoading ? <Loader2Icon size={14} className="animate-spin" /> : <SparklesIcon size={14} />}
+                        Generate
+                    </button>
+                </span>
                 <textarea name="description" onChange={onChangeHandler} value={productInfo.description} placeholder="Enter product description" rows={5} className="w-full max-w-sm p-2 px-4 outline-none border border-slate-200 rounded resize-none" required />
             </label>
 

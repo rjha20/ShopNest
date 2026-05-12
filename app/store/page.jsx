@@ -2,7 +2,7 @@
 import Loading from "@/components/Loading"
 import { useAuth } from "@clerk/nextjs"
 import axios from "axios"
-import { CircleDollarSignIcon, ShoppingBasketIcon, StarIcon, TagsIcon } from "lucide-react"
+import { BotIcon, CircleDollarSignIcon, Loader2Icon, SendIcon, ShoppingBasketIcon, StarIcon, TagsIcon } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -22,6 +22,9 @@ export default function Dashboard() {
         totalOrders: 0,
         ratings: [],
     })
+    const [aiQuestion, setAiQuestion] = useState("Which products are selling best, and what should I discount?")
+    const [aiInsight, setAiInsight] = useState(null)
+    const [aiLoading, setAiLoading] = useState(false)
 
     const dashboardCardsData = [
         { title: 'Total Products', value: dashboardData.totalProducts, icon: ShoppingBasketIcon },
@@ -43,6 +46,25 @@ export default function Dashboard() {
             toast.error(error?.response?.data?.error || error.message)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const askAnalyticsAssistant = async () => {
+        try {
+            setAiLoading(true)
+            const token = await getToken()
+            const { data } = await axios.post('/api/ai/store-analytics', {
+                question: aiQuestion
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            setAiInsight(data.result)
+        } catch (error) {
+            toast.error(error?.response?.data?.error || error.message)
+        } finally {
+            setAiLoading(false)
         }
     }
 
@@ -68,6 +90,51 @@ export default function Dashboard() {
                         </div>
                     ))
                 }
+            </div>
+
+            <div className="max-w-4xl rounded border border-slate-200 p-5 mb-10">
+                <div className="flex items-center gap-2 text-slate-800 font-medium">
+                    <BotIcon size={20} />
+                    <h2>AI Store Analytics</h2>
+                </div>
+                <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                    <input
+                        value={aiQuestion}
+                        onChange={e => setAiQuestion(e.target.value)}
+                        className="flex-1 rounded border border-slate-200 px-4 py-2 outline-none"
+                        placeholder="Ask about sales, discounts, ratings, or products"
+                    />
+                    <button
+                        type="button"
+                        disabled={aiLoading}
+                        onClick={askAnalyticsAssistant}
+                        className="inline-flex items-center justify-center gap-2 rounded bg-slate-800 px-5 py-2 text-white hover:bg-slate-900 disabled:opacity-60"
+                    >
+                        {aiLoading ? <Loader2Icon size={16} className="animate-spin" /> : <SendIcon size={16} />}
+                        Ask
+                    </button>
+                </div>
+                {aiInsight && (
+                    <div className="mt-5 grid gap-5 text-sm leading-6 md:grid-cols-2">
+                        <div className="md:col-span-2">
+                            <p className="font-medium text-slate-800">Answer</p>
+                            <p className="mt-1">{aiInsight.answer}</p>
+                        </div>
+                        {[
+                            ['Top Products', aiInsight.topProducts],
+                            ['Discount Ideas', aiInsight.discountIdeas],
+                            ['Risks', aiInsight.risks],
+                            ['Next Actions', aiInsight.nextActions],
+                        ].map(([title, items]) => (
+                            <div key={title}>
+                                <p className="font-medium text-slate-800">{title}</p>
+                                <ul className="mt-2 list-disc pl-5">
+                                    {(items || []).map((item, index) => <li key={index}>{item}</li>)}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <h2>Total Reviews</h2>

@@ -1,12 +1,37 @@
 'use client'
-import { ArrowRight, StarIcon } from "lucide-react"
+import { ArrowRight, Loader2Icon, SparklesIcon, StarIcon } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
+import toast from "react-hot-toast"
 
 const ProductDescription = ({ product }) => {
 
     const [selectedTab, setSelectedTab] = useState('Description')
+    const [summary, setSummary] = useState(null)
+    const [summaryLoading, setSummaryLoading] = useState(false)
+
+    const generateReviewSummary = async () => {
+        try {
+            setSummaryLoading(true)
+            const response = await fetch('/api/ai/review-summary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId: product.id })
+            })
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Unable to summarize reviews')
+            }
+
+            setSummary(data.result)
+        } catch (error) {
+            toast.error(error.message)
+        } finally {
+            setSummaryLoading(false)
+        }
+    }
 
     return (
         <div className="my-18 text-sm text-slate-600">
@@ -28,6 +53,40 @@ const ProductDescription = ({ product }) => {
             {/* Reviews */}
             {selectedTab === "Reviews" && (
                 <div className="flex flex-col gap-3 mt-14">
+                    <div className="max-w-2xl rounded border border-slate-200 p-4">
+                        <div className="flex items-center justify-between gap-4">
+                            <h3 className="font-semibold text-slate-800">AI Review Summary</h3>
+                            <button
+                                type="button"
+                                disabled={summaryLoading}
+                                onClick={generateReviewSummary}
+                                className="inline-flex items-center gap-1.5 rounded bg-slate-800 px-3 py-2 text-xs font-medium text-white hover:bg-slate-900 disabled:opacity-60"
+                            >
+                                {summaryLoading ? <Loader2Icon size={14} className="animate-spin" /> : <SparklesIcon size={14} />}
+                                Summarize
+                            </button>
+                        </div>
+                        {summary && (
+                            <div className="mt-4 space-y-3 leading-6">
+                                <p>{summary.summary}</p>
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <div>
+                                        <p className="font-medium text-slate-800">Pros</p>
+                                        <ul className="mt-2 list-disc pl-5">
+                                            {(summary.pros || []).map((item, index) => <li key={index}>{item}</li>)}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-slate-800">Cons</p>
+                                        <ul className="mt-2 list-disc pl-5">
+                                            {(summary.cons || []).map((item, index) => <li key={index}>{item}</li>)}
+                                        </ul>
+                                    </div>
+                                </div>
+                                <p className="font-medium text-slate-800">{summary.verdict}</p>
+                            </div>
+                        )}
+                    </div>
                     {product.rating.map((item,index) => (
                         <div key={index} className="flex gap-5 mb-10">
                             <Image src={item.user.image} alt="" className="size-10 rounded-full" width={100} height={100} />

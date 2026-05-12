@@ -4,12 +4,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { useUser, useClerk, UserButton } from "@clerk/nextjs";
+import { useUser, useClerk, UserButton, useAuth } from "@clerk/nextjs";
+import { isPlusSubscriber } from "@/lib/plus";
 
 const Navbar = () => {
 
     const { isLoaded, user } = useUser();
-    const {openSignIn} = useClerk();
+    const { has, sessionClaims } = useAuth();
+    const { openSignIn } = useClerk();
+    const isPlus = isPlusSubscriber({ has, user, sessionClaims });
     const router = useRouter();
 
     const [search, setSearch] = useState('')
@@ -27,9 +30,11 @@ const Navbar = () => {
 
                     <Link href="/" className="relative text-3xl sm:text-[2.1rem] md:text-5xl font-extrabold tracking-tight text-slate-700">
                         Shop<span className="text-green-600 text-[2.1rem] sm:text-[2.4rem] md:text-6xl leading-none">Nest</span>
-                        <p className="hidden sm:flex absolute text-[10px] font-semibold -top-2 -right-7 px-2.5 py-0.5 rounded-full items-center gap-2 text-white bg-green-500">
-                            plus
-                        </p>
+                        {isPlus && (
+                            <p className="hidden sm:flex absolute text-[10px] font-semibold -top-2 -right-7 px-2.5 py-0.5 rounded-full items-center gap-2 text-white bg-green-500">
+                                plus
+                            </p>
+                        )}
                     </Link>
 
                     <div className="flex items-center gap-2 sm:gap-3">
