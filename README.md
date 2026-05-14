@@ -170,51 +170,31 @@ npx prisma migrate dev
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Visit 👉 http://localhost:3000
 
-## Available Scripts
+---
 
-```bash
-npm run dev      # Start the Next.js dev server with Turbopack
-npm run build    # Generate Prisma client and build for production
-npm run start    # Start the production server
-npm run lint     # Run Next.js linting
-```
+## 🔐 Environment Variables
 
-## Data Models
+| Variable       | Description                |
+| -------------- | -------------------------- |
+| DATABASE_URL   | Database connection string |
+| JWT_SECRET     | Authentication secret      |
+| CLOUDINARY_URL | Cloudinary config          |
 
-The Prisma schema includes:
+---
 
-- `User` - Clerk-linked buyer/seller account data and cart JSON
-- `Store` - seller store profile, approval status, and activation state
-- `Product` - product catalog with images, pricing, category, and stock
-- `Order` and `OrderItem` - multi-store order records and payment state
-- `Address` - buyer shipping details
-- `Rating` - product rating and review tied to a delivered order
-- `Coupon` - discount configuration and expiration
+## 🤝 Contributing
 
-## Background Jobs
+Contributions are welcome!
 
-Inngest functions handle:
+1. Fork the repository
+2. Create a new branch
+3. Commit your changes
+4. Open a Pull Request
 
-- Creating users when Clerk emits `user.created`
-- Updating user records when Clerk emits `user.updated`
-- Deleting users when Clerk emits `user.deleted`
-- Removing coupons after their expiration time
+---
 
-## Roadmap
-
-- Complete Stripe checkout support.
-- Add richer real-time order tracking.
-- Expand seller analytics and reporting.
-- Add more membership-specific buyer benefits.
-- Improve automated tests for API workflows.
-
-## Author
-
-Rohan Jha
-GitHub: https://github.com/rha20
-
-## License
+## 📜 License
 
 This project is licensed under the MIT License.
