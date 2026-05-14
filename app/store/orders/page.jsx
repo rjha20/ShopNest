@@ -72,7 +72,7 @@ export default function StoreOrders() {
                 <p>No orders found</p>
             ) : (
                 <div className="overflow-x-auto max-w-4xl rounded-md shadow border border-gray-200">
-                    <table className="w-full text-sm text-left text-gray-600">
+                    <table className="w-full min-w-[760px] text-sm text-left text-gray-600">
                         <thead className="bg-gray-50 text-gray-700 text-xs uppercase tracking-wider">
                             <tr>
                                 {["Sr. No.", "Customer", "Total", "Payment", "Coupon", "Status", "Date"].map((heading, i) => (
@@ -126,8 +126,8 @@ export default function StoreOrders() {
 
             {/* Modal */}
             {isModalOpen && selectedOrder && (
-                <div onClick={closeModal} className="fixed inset-0 flex items-center justify-center bg-black/50 text-slate-700 text-sm backdrop-blur-xs z-50" >
-                    <div onClick={e => e.stopPropagation()} className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative">
+                <div onClick={closeModal} className="fixed inset-0 flex items-center justify-center bg-black/50 text-slate-700 text-sm backdrop-blur-xs z-50 px-4 py-6" >
+                    <div onClick={e => e.stopPropagation()} className="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 relative">
                         <h2 className="text-xl font-semibold text-slate-900 mb-4 text-center">
                             Order Details
                         </h2>
@@ -152,7 +152,7 @@ export default function StoreOrders() {
                                             alt={item.product?.name}
                                             className="w-16 h-16 object-cover rounded"
                                         />
-                                        <div className="flex-1">
+                                        <div className="flex-1 min-w-0">
                                             <p className="text-slate-800">{item.product?.name}</p>
                                             <p>Qty: {item.quantity}</p>
                                             <p>Price: ${item.price}</p>

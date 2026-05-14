@@ -205,7 +205,7 @@ const OrderSummary = ({ totalPrice, items }) => {
     }
 
     return (
-        <div className='w-full max-w-lg lg:max-w-[340px] bg-slate-50/30 border border-slate-200 text-slate-500 text-sm rounded-xl p-7'>
+        <div className='w-full max-w-lg lg:max-w-[340px] bg-slate-50/30 border border-slate-200 text-slate-500 text-sm rounded-xl p-5 sm:p-7'>
             <h2 className='text-xl font-medium text-slate-600'>Payment Summary</h2>
             <p className='text-slate-400 text-xs my-4'>Payment Method</p>
             <div className='flex gap-2 items-center'>
@@ -220,9 +220,9 @@ const OrderSummary = ({ totalPrice, items }) => {
                 <p>Address</p>
                 {
                     selectedAddress ? (
-                        <div className='flex gap-2 items-center'>
+                        <div className='flex gap-2 items-start'>
                             <p>{selectedAddress.name}, {selectedAddress.city}, {selectedAddress.state}, {selectedAddress.zip}</p>
-                            <SquarePenIcon onClick={() => setSelectedAddress(null)} className='cursor-pointer' size={18} />
+                            <SquarePenIcon onClick={() => setSelectedAddress(null)} className='cursor-pointer shrink-0' size={18} />
                         </div>
                     ) : (
                         <div>
@@ -287,11 +287,11 @@ const OrderSummary = ({ totalPrice, items }) => {
                                                 <div
                                                     key={idx}
                                                     onClick={() => handleSelectCoupon(c)}
-                                                    className='p-2 hover:bg-slate-100 cursor-pointer border-b border-slate-200 last:border-b-0 flex justify-between items-center'
+                                                    className='p-2 hover:bg-slate-100 cursor-pointer border-b border-slate-200 last:border-b-0 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1'
                                                 >
                                                     <div>
                                                         <span className='font-semibold text-slate-700'>{c.code}</span>
-                                                        <span className='text-xs text-slate-500 ml-2'>{c.description}</span>
+                                                        <span className='text-xs text-slate-500 sm:ml-2 block sm:inline'>{c.description}</span>
                                                     </div>
                                                     <span className='text-emerald-600 font-medium'>{c.discount}% OFF</span>
                                                 </div>
@@ -302,13 +302,13 @@ const OrderSummary = ({ totalPrice, items }) => {
                                     </div>
                                 )}
                             </div>
-                            <form onSubmit={handleCouponCode} className='flex justify-center gap-3'>
+                            <form onSubmit={handleCouponCode} className='flex flex-col sm:flex-row justify-center gap-3'>
                                 <input onChange={(e) => setCouponCodeInput(e.target.value)} value={couponCodeInput} type="text" placeholder='Or enter coupon code' className='border border-slate-400 p-1.5 rounded w-full outline-none' />
-                                <button className='bg-slate-600 text-white px-3 rounded hover:bg-slate-800 active:scale-95 transition-all'>Apply</button>
+                                <button className='bg-slate-600 text-white px-3 py-2 sm:py-0 rounded hover:bg-slate-800 active:scale-95 transition-all'>Apply</button>
                             </form>
                         </div>
                     ) : (
-                        <div className='w-full flex items-center justify-center gap-2 text-xs mt-2'>
+                        <div className='w-full flex flex-wrap items-center justify-center gap-2 text-xs mt-2'>
                             <p>Code: <span className='font-semibold ml-1'>{coupon.code.toUpperCase()}</span></p>
                             <p>{coupon.description}</p>
                             <XIcon size={18} onClick={() => { setCoupon(''); setCouponCodeInput(''); }} className='hover:text-red-700 transition cursor-pointer' />

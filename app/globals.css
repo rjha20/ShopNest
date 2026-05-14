@@ -12,8 +12,21 @@
 }
 
 @layer base {
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
     button {
         cursor: pointer;
+    }
+
+    img,
+    video,
+    canvas,
+    svg {
+        max-width: 100%;
     }
 }
 

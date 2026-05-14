@@ -34,7 +34,7 @@ export default function StoreShop() {
     }, [username])
 
     return !loading ? (
-        <div className="min-h-[70vh] mx-6">
+        <div className="min-h-[70vh] mx-4 sm:mx-6">
 
             {/* Store Info Banner */}
             {storeInfo && (
@@ -51,13 +51,13 @@ export default function StoreShop() {
                         <p className="text-sm text-slate-600 mt-2 max-w-lg">{storeInfo.description}</p>
                         <div className="text-xs text-slate-500 mt-4 space-y-1"></div>
                         <div className="space-y-2 text-sm text-slate-500">
-                            <div className="flex items-center">
-                                <MapPinIcon className="w-4 h-4 text-gray-500 mr-2" />
-                                <span>{storeInfo.address}</span>
+                            <div className="flex items-start">
+                                <MapPinIcon className="w-4 h-4 text-gray-500 mr-2 mt-0.5 shrink-0" />
+                                <span className="break-words">{storeInfo.address}</span>
                             </div>
-                            <div className="flex items-center">
-                                <MailIcon className="w-4 h-4 text-gray-500 mr-2" />
-                                <span>{storeInfo.email}</span>
+                            <div className="flex items-start">
+                                <MailIcon className="w-4 h-4 text-gray-500 mr-2 mt-0.5 shrink-0" />
+                                <span className="break-all">{storeInfo.email}</span>
                             </div>
                            
                         </div>
@@ -66,9 +66,9 @@ export default function StoreShop() {
             )}
 
             {/* Products */}
-            <div className=" max-w-7xl mx-auto mb-40">
+            <div className="max-w-7xl mx-auto mb-40">
                 <h1 className="text-2xl mt-12">Shop <span className="text-slate-800 font-medium">Products</span></h1>
-                <div className="mt-5 grid grid-cols-2 sm:flex flex-wrap gap-6 xl:gap-12 mx-auto">
+                <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 xl:gap-8 mx-auto">
                     {products.map((product) => <ProductCard key={product.id} product={product} />)}
                 </div>
             </div>

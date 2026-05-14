@@ -149,7 +149,7 @@ export default function StoreAddProduct() {
             <h1 className="text-2xl">Add New <span className="text-slate-800 font-medium">Products</span></h1>
             <p className="mt-7">Product Images</p>
 
-            <div htmlFor="" className="flex gap-3 mt-4">
+            <div htmlFor="" className="flex flex-wrap gap-3 mt-4">
                 {Object.keys(images).map((key) => (
                     <label key={key} htmlFor={`images${key}`}>
                         <Image width={300} height={300} className='h-15 w-auto border border-slate-200 rounded cursor-pointer' src={images[key] ? URL.createObjectURL(images[key]) : assets.upload_area} alt="" />
@@ -176,7 +176,7 @@ export default function StoreAddProduct() {
             </label>
 
             <label htmlFor="" className="flex flex-col gap-2 my-6 ">
-                <span className="flex items-center justify-between max-w-sm">
+                <span className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 max-w-sm">
                     Description
                     <button
                         type="button"
@@ -191,7 +191,7 @@ export default function StoreAddProduct() {
                 <textarea name="description" onChange={onChangeHandler} value={productInfo.description} placeholder="Enter product description" rows={5} className="w-full max-w-sm p-2 px-4 outline-none border border-slate-200 rounded resize-none" required />
             </label>
 
-            <div className="flex gap-5">
+            <div className="flex flex-col sm:flex-row gap-5">
                 <label htmlFor="" className="flex flex-col gap-2 ">
                     Actual Price (₹)
                     <input type="number" name="mrp" onChange={onChangeHandler} value={productInfo.mrp} placeholder="0" rows={5} className="w-full max-w-45 p-2 px-4 outline-none border border-slate-200 rounded resize-none" required />

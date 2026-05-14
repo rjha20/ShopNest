@@ -54,7 +54,7 @@ const ProductDescription = ({ product }) => {
             {selectedTab === "Reviews" && (
                 <div className="flex flex-col gap-3 mt-14">
                     <div className="max-w-2xl rounded border border-slate-200 p-4">
-                        <div className="flex items-center justify-between gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <h3 className="font-semibold text-slate-800">AI Review Summary</h3>
                             <button
                                 type="button"
@@ -88,7 +88,7 @@ const ProductDescription = ({ product }) => {
                         )}
                     </div>
                     {product.rating.map((item,index) => (
-                        <div key={index} className="flex gap-5 mb-10">
+                        <div key={index} className="flex gap-4 sm:gap-5 mb-10">
                             <Image src={item.user.image} alt="" className="size-10 rounded-full" width={100} height={100} />
                             <div>
                                 <div className="flex items-center" >
@@ -108,7 +108,7 @@ const ProductDescription = ({ product }) => {
             {/* Store Page */}
             <div className="flex gap-3 mt-14">
                 <Image src={product.store.logo} alt="" className="size-11 rounded-full ring ring-slate-400" width={100} height={100} />
-                <div>
+                <div className="min-w-0">
                     <p className="font-medium text-slate-600">Product by {product.store.name}</p>
                     <Link href={`/shop/${product.store.username}`} className="flex items-center gap-1.5 text-green-500"> view store <ArrowRight size={14} /></Link>
                 </div>
